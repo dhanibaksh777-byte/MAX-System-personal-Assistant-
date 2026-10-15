@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAX — AI Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- ─── Background Effects ─── -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <!-- ─── Title Bar (Draggable) ─── -->
+    <div class="title-bar" id="titleBar">
+        <div class="title-bar-left">
+            <div class="status-dot" id="statusDot"></div>
+            <span class="title-text">MAX</span>
+        </div>
+        <div class="title-bar-right">
+            <button class="title-btn" id="btnClearMemory" title="Clear Memory">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+            </button>
+            <button class="title-btn" id="btnSettings" title="Settings">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- ─── Settings Panel ─── -->
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <span>Settings</span>
+            <button class="settings-close" id="settingsClose">×</button>
+        </div>
+        <div class="settings-body">
+            <!-- Groq API Key Section -->
+            <div class="setting-section">
+                <div class="setting-label-header">
+                    <span>Groq API Key (Free)</span>
+                    <a href="https://console.groq.com/keys" target="_blank" class="free-badge">Get Free Key ↗</a>
+                </div>
+                <div class="api-key-input-row">
+                    <input type="password" id="apiKeyInput" placeholder="gsk_..." autocomplete="off">
+                    <button id="btnSaveKey" class="btn-save-key">Save</button>
+                </div>
+                <div class="key-status" id="keyStatusText">Checking API status...</div>
+            </div>
+
+            <!-- Model Selection -->
+            <div class="setting-section">
+                <label for="modelSelect">AI Model</label>
+                <select id="modelSelect" class="settings-select">
+                    <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Smartest)</option>
+                    <option value="llama-3.1-8b-instant">Llama 3.1 8B (Fastest)</option>
+                </select>
+            </div>
+
+            <!-- Voice Controls -->
+            <div class="setting-group">
+                <label>Voice Enabled</label>
+                <label class="toggle">
+                    <input type="checkbox" id="voiceToggle" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-group">
+                <label>Auto-Listen After Response</label>
+                <label class="toggle">
+                    <input type="checkbox" id="autoListenToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-group">
+                <label>Speech Rate</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="speechRate" min="0.5" max="2" step="0.1" value="1">
+                    <span id="speechRateValue">1.0x</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── Main Content ─── -->
+    <div class="main-container">
+
+        <!-- ─── Orb Section ─── -->
+        <div class="orb-section">
+            <div class="orb-container" id="orbContainer">
+                <div class="orb-ring orb-ring-1"></div>
+                <div class="orb-ring orb-ring-2"></div>
+                <div class="orb-ring orb-ring-3"></div>
+                <div class="orb-core" id="orbCore">
+                    <div class="orb-inner"></div>
+                </div>
+                <div class="orb-particles" id="orbParticles"></div>
+            </div>
+            <div class="status-text" id="statusText">Ready</div>
+        </div>
+
+        <!-- ─── Chat Messages ─── -->
+        <div class="chat-container" id="chatContainer">
+            <div class="chat-messages" id="chatMessages">
+                <div class="message assistant-message fade-in">
+                    <div class="message-avatar">M</div>
+                    <div class="message-content">
+                        <p>Hello! I'm <strong>Max</strong>, your personal AI assistant. I can open apps, search the web, play music, and much more. Just speak or type!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── Language Selector ─── -->
+        <div class="language-bar">
+            <button class="lang-btn active" data-lang="en-US" data-code="en" id="langEN">EN</button>
+            <button class="lang-btn" data-lang="hi-IN" data-code="hi" id="langHI">हिंदी</button>
+            <button class="lang-btn" data-lang="ur-PK" data-code="ur" id="langUR">اردو</button>
+        </div>
+
+        <!-- ─── Input Section ─── -->
+        <div class="input-section">
+            <div class="input-wrapper">
+                <textarea id="userInput" placeholder="Type a message or press mic..." rows="1" autocomplete="off"></textarea>
+                <button class="btn-send" id="btnSend" title="Send">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+            <button class="btn-mic" id="btnMic" title="Hold to speak (or click to toggle)">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                </svg>
+                <div class="mic-pulse"></div>
+            </button>
+        </div>
+
+        <!-- ─── Keyboard Shortcut Hint ─── -->
+        <div class="shortcut-hint">
+            <kbd>Space</kbd> to speak &nbsp;·&nbsp; <kbd>Enter</kbd> to send &nbsp;·&nbsp; <kbd>Esc</kbd> to stop
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
